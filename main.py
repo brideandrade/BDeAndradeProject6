@@ -3,7 +3,6 @@ import numbers
 
 def main():
     game_worksheet = open_worksheet("games-features.xlsx")
-#Go through and change these if time for easier answers
     run_fxn_answers = ["1", "2", "3", "4", "5", "6"]
     while True:
         response = input("What command would you like to see? Type the corresponding number next to the command you'd like.\n"
@@ -98,9 +97,8 @@ def find_Often_Recommended(game_worksheet):
             continue
         recommendation_percent = recommendation_count / number_of_owners
         game_name = row[2].value
-#How do I get it so that the recommendation_count does not print 0 recommendations and only greater than or equal to user input
-#Same question for next fxn
-        if for_inp > 0:
+
+        if recommendation_count > for_inp:
             print(f"Name:{game_name}, Recommendation Count:{recommendation_count}, Number of owners:{number_of_owners}, Percent of Recommendation:{recommendation_percent}")
 
 def find_well_played(game_worksheet):
@@ -121,42 +119,48 @@ def find_well_played(game_worksheet):
 
 def find_Count_For_System(game_worksheet):
     print("You chose to see a count for the number of games")
-    count = 0
-    for row in game_worksheet.rows:
-            mac_platform = row[28].value
-            windows_platform = row[26].value
-            linux_platform = row[27].value
-            if windows_platform == "True":
-                if not isinstance(windows_platform, numbers.Number):
-                    continue
-                count +=1
-            print(f"The count for number of Windows games available: {count}")
-            if mac_platform == "True":
-                if not isinstance(mac_platform, numbers.Number):
-                    continue
-                count += 1
-            print(f"The count for number of Mac games available: {count}")
-            if linux_platform == "True":
-                if not isinstance(linux_platform, numbers.Number):
-                    continue
-                count += 1
-            print(f"The count for number of Linux games available: {count}")
-    return count
-#There is something wrong in the code that won't have this part run correctly
-
-def Look_Up_Data(game_worksheet):
-    print("You chose to look up more data")
-    data_question = input("Which game would you like more data on?")
-    data_question_value = data_question.value
+    num_platforms = {"windows": 0, "mac": 0, "linux": 0}
     for row in game_worksheet.rows:
         mac_platform = row[28].value
         windows_platform = row[26].value
         linux_platform = row[27].value
+        if windows_platform == "True":
+            num_platforms["windows"] +=1
+
+        if mac_platform == "True":
+            num_platforms["mac"] +=1
+
+        if linux_platform == "True":
+            num_platforms["linux"] +=1
+    print(f"Windows Platform: {num_platforms['windows']}")
+    print(f"Mac Platform: {num_platforms['mac']}")
+    print(f"Linux Platform: {num_platforms['linux']}")
+    return num_platforms
+
+def Look_Up_Data(game_worksheet):
+    print("You chose to look up more data")
+    data_question = input("Which game would you like more data on?")
+    for row in game_worksheet.rows:
+        runs_on = "Runs on: "
+        mac_platform = row[28].value
+        windows_platform = row[26].value
+        linux_platform = row[27].value
         response_name = row[3].value
-#Is there a way to print Platform name without imitating "if mac_platform == "True"..."?
-#How do I get it so that no matter what the user types, the following code prints what directions want
-        if data_question_value == response_name:
-            print(f"Name: {response_name}")
+        metacritic_score = row[9].value
+        DLC_Count = row[8].value
+        owner_count = row[15].value
+        if isinstance(response_name, numbers.Number):
+            continue
+        if mac_platform == "True":
+            runs_on = runs_on + "mac"
+        if windows_platform == "True":
+            runs_on = runs_on + "windows"
+        if linux_platform == "True":
+            runs_on = runs_on + "linux"
+        if response_name.lower() == data_question.lower():
+            print(f"Name: {response_name}, {runs_on} Metacritic Score: {metacritic_score}, DLC Count: {DLC_Count}, Owner Count: {owner_count}" )
+            return
+
 
 
 main()
